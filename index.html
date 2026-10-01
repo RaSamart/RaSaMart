@@ -39,8 +39,8 @@ h1{font-size:clamp(40px,6vw,68px);line-height:1.02;letter-spacing:-2.5px;margin:
 <section class="section" id="payment"><div class="wrap"><div class="kicker">Secure Payments</div><h2>RaSaMart Payment Options</h2><p>Customers can choose Cash on Delivery or online payment through UPI, cards and net banking once the payment gateway is connected.</p><div class="feature-grid"><div class="feature"><b>₹</b><span>UPI</span></div><div class="feature"><b>💳</b><span>Debit / Credit Card</span></div><div class="feature"><b>🏦</b><span>Net Banking</span></div><div class="feature"><b>🚚</b><span>Cash on Delivery</span></div></div><div class="notice" style="margin-top:16px">Online payment requires your own Razorpay Payment Link or UPI ID. No payment credential is guessed or stored in this website.</div></div></section><section class="section" id="contact"><div class="wrap contact"><div><div class="kicker">Contact Us</div><h2>Need help with your order?</h2><p>Product ka size/model, availability, price, delivery aur payment details confirm karne ke liye RaSaMart se contact karein.</p></div><div><div class="contact-item"><small>Phone</small><strong>9608106538</strong></div><div class="contact-item"><small>Email</small><strong>ramneocomputer@gmail.com</strong></div><div class="contact-item"><small>Address</small><strong>Sankarpur, Sakarpura, Hasanpur, Samastipur, Bihar — 848205</strong></div><div class="contact-item"><small>Delivery</small><strong>All India — pincode serviceability may vary</strong></div></div></div></section>
 <footer>© 2026 RaSaMart • Shop Smart • Live Better</footer>
 
-<div class="modal" id="cartModal"><div class="box"><button class="close" onclick="closeCart()">×</button><h2>Your Cart</h2><div id="cartItems"><div class="cartitem"><div><b>Motorola G85 5G Black Silicone Back Cover</b><br><small>₹151 × 1</small></div></div></div><div id="cartTotal"><h3>Total: ₹151</h3></div><button class="btn primary" style="width:100%;margin-top:12px" onclick="openCheckout()">Proceed to Order</button></div></div>
-<div class="modal" id="checkoutModal"><div class="box"><button class="close" onclick="closeCheckout()">×</button><h2>Order & Payment</h2><div class="notice"><b>Selected product:</b> Motorola G85 5G Black Silicone Back Cover — ₹151<br><br><b>Payment options:</b> UPI • Debit/Credit Card • Net Banking • Cash on Delivery. Online payment is ready to connect with your Razorpay Payment Link.</div><div class="formgrid"><input id="name" placeholder="Full Name"><input id="phone" placeholder="Mobile Number"><textarea class="full" id="address" placeholder="Full Delivery Address"></textarea><input id="pin" placeholder="Pincode"><select id="pay" onchange="togglePay()"><option value="COD">Cash on Delivery</option><option value="ONLINE">UPI / Card / Net Banking — Pay Online</option></select></div><div id="onlinePayBox" style="display:none;margin-top:14px;padding:14px;border:1px solid #eadfca;border-radius:12px;background:#fff8e8"><b>Pay Online</b><p style="margin:7px 0;font-size:13px;color:#666">UPI ID: <strong>ramlalkumarriya7@ybl</strong></p><p style="margin:7px 0;font-size:13px;color:#666">Pay Online दबाने पर आपके मोबाइल में उपलब्ध UPI app खुल सकता है और order amount भर जाएगा.</p><button class="btn primary" style="width:100%" onclick="payOnline()">💳 Pay by UPI</button></div><button class="btn primary" style="width:100%;margin-top:15px" onclick="submitOrder()">Submit Order</button><p id="orderMsg" style="font-size:13px;color:#666"></p></div></div>
+<div class="modal" id="cartModal"><div class="box"><button class="close" onclick="closeCart()">×</button><h2>Your Cart</h2><div id="cartItems"></div><div id="cartTotal"></div><button class="btn primary" style="width:100%;margin-top:12px" onclick="openCheckout()">Proceed to Order</button></div></div>
+<div class="modal" id="checkoutModal"><div class="box"><button class="close" onclick="closeCheckout()">×</button><h2>Order & Payment</h2><div class="notice" id="checkoutSummary"></div><div class="formgrid"><input id="name" placeholder="Full Name"><input id="phone" placeholder="Mobile Number"><textarea class="full" id="address" placeholder="Full Delivery Address"></textarea><input id="pin" placeholder="Pincode" inputmode="numeric" maxlength="6"><select id="pay" onchange="togglePay()"><option value="COD">Cash on Delivery</option><option value="ONLINE">UPI / Card / Net Banking — Pay Online</option></select></div><div id="onlinePayBox" style="display:none;margin-top:14px;padding:14px;border:1px solid #eadfca;border-radius:12px;background:#fff8e8"><b>Pay Online</b><p style="margin:7px 0;font-size:13px;color:#666">UPI ID: <strong>ramlalkumarriya7@ybl</strong></p><p style="margin:7px 0;font-size:13px;color:#666">Pay Online दबाने पर आपके मोबाइल में उपलब्ध UPI app खुल सकता है और order amount भर जाएगा.</p><button class="btn primary" style="width:100%" onclick="payOnline()">💳 Pay by UPI</button></div><button class="btn primary" style="width:100%;margin-top:15px" onclick="submitOrder()">Submit Order</button><p id="orderMsg" style="font-size:13px;color:#666"></p></div></div>
 
 <script>
 const products=[
@@ -93,16 +93,37 @@ const RAZORPAY_PAYMENT_LINK='';
 const UPI_ID='ramlalkumarriya7@ybl';
 function togglePay(){document.getElementById('onlinePayBox').style.display=document.getElementById('pay').value==='ONLINE'?'block':'none'}
 function payOnline(){if(RAZORPAY_PAYMENT_LINK){window.location.href=RAZORPAY_PAYMENT_LINK;return}let total=cart.reduce((s,x)=>s+x.price*x.qty,0);if(!total){alert('Cart empty hai.');return}let note='RaSaMart Order';let upi='upi://pay?pa='+encodeURIComponent(UPI_ID)+'&pn='+encodeURIComponent('RaSaMart')+'&am='+encodeURIComponent(total.toFixed(2))+'&cu=INR&tn='+encodeURIComponent(note);window.location.href=upi}
-function openCheckout(){if(!cart.length)return alert('Cart empty hai.');closeCart();document.getElementById('checkoutModal').classList.add('show');togglePay()}function closeCheckout(){document.getElementById('checkoutModal').classList.remove('show')}
+function openCheckout(){
+  if(!cart.length)return alert('Cart empty hai.');
+  closeCart();
+
+  let total=cart.reduce((s,x)=>s+x.price*x.qty,0);
+  let items=cart.map(x=>x.name+' × '+x.qty+' — ₹'+(x.price*x.qty)).join('<br>');
+
+  document.getElementById('checkoutSummary').innerHTML=
+    '<b>Selected product(s):</b><br>'+items+
+    '<br><br><b>Total:</b> ₹'+total+
+    '<br><br><b>Payment options:</b> UPI • Debit/Credit Card • Net Banking • Cash on Delivery.'+
+    '<br>Online payment is ready to connect with your Razorpay Payment Link.';
+
+  document.getElementById('checkoutModal').classList.add('show');
+  togglePay();
+}
+
+function closeCheckout(){
+  document.getElementById('checkoutModal').classList.remove('show');
+}
 function submitOrder(){
-  let n=document.getElementById('name').value.trim(), ph=document.getElementById('phone').value.trim(), a=document.getElementById('address').value.trim();
+  let n=document.getElementById('name').value.trim(), ph=document.getElementById('phone').value.trim(), a=document.getElementById('address').value.trim(), pin=document.getElementById('pin').value.trim();
   let method=document.getElementById('pay').value==='COD'?'Cash on Delivery':'Online Payment (UPI/Card/Net Banking)';
-  if(!n||!ph||!a){document.getElementById('orderMsg').textContent='Please name, mobile number aur address bharein.';return}
+  if(!n||!ph||!a||!pin){document.getElementById('orderMsg').textContent='Please name, mobile number, address aur pincode bharein.';return}
   if(!/^\d{10}$/.test(ph.replace(/\D/g,''))){document.getElementById('orderMsg').textContent='Please 10 digit mobile number bharein.';return}
+  if(!/^\d{6}$/.test(pin.replace(/\D/g,''))){document.getElementById('orderMsg').textContent='Please 6 digit pincode bharein.';return}
+  if(!cart.length){document.getElementById('orderMsg').textContent='Cart empty hai.';return}
   let total=cart.reduce((sum,x)=>sum+x.price*x.qty,0);
   let items=cart.map(x=>`${x.name} x ${x.qty} = ₹${x.price*x.qty}`).join('\n');
   let orderId='RSA'+Date.now().toString().slice(-8);
-  let msg=`RaSaMart New Order\nOrder ID: ${orderId}\n\nCustomer: ${n}\nMobile: ${ph}\nAddress: ${a}\n\nItems:\n${items}\n\nTotal: ₹${total}\nPayment: ${method}`;
+  let msg=`RaSaMart New Order\nOrder ID: ${orderId}\n\nCustomer: ${n}\nMobile: ${ph}\nAddress: ${a}\nPincode: ${pin}\n\nItems:\n${items}\n\nTotal: ₹${total}\nPayment: ${method}`;
   if(method==='Cash on Delivery'){
     document.getElementById('orderMsg').textContent='COD order ready hai. WhatsApp par order confirm karein.';
     window.open('https://wa.me/919608106538?text='+encodeURIComponent(msg),'_blank');
